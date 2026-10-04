@@ -87,18 +87,83 @@ def depthFirstSearch(problem: SearchProblem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontier = util.Stack() # su dung stack de luu cac trang thai can duyet
+    visited = set() # su dung set de luu cac trang thai da duyet
+    startState = problem.getStartState() # lay state ban dau 
+    frontier.push((startState,[])) # push state ban dau va path rong vao frontier
+
+    while not frontier.isEmpty():
+        state, path = frontier.pop() # lay state va path tu frontier
+
+        # neu state da duyet thi bo qua
+        if state in visited:
+            continue
+
+        visited.add(state) # them state da duyet vao visited
+
+        # neu state la goal thi tra ve path
+        if problem.isGoalState(state):
+            return path
+
+        # lay cac successor cua state va push vao frontier neu chua duyet
+        for successor, action, stepCost in problem.getSuccessors(state):
+            if successor not in visited:
+                newPath = path + [action] # tao path moi tu path hien tai va action moi
+                frontier.push((successor, newPath)) 
+
+    return [] # tra ve list rong neu khong tim thay goal 
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontier = util.Queue() 
+    visited = set()
+    startState = problem.getStartState()
+    frontier.push((startState,[]))
 
+    while not frontier.isEmpty():
+        state, path = frontier.pop()
+
+        if state in visited:
+            continue
+
+        visited.add(state)
+
+        if problem.isGoalState(state):
+            return path
+
+        for successor, action, stepCost in problem.getSuccessors(state):
+            if successor not in visited:
+                newPath = path + [action]
+                frontier.push((successor, newPath))
+
+    return []
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontier = util.PriorityQueue()
+    visited = set()
+    startState = problem.getStartState()
+    frontier.push((startState, [], 0), 0) # push state ban dau gom trang thai va chi phi ban dau bang 0
 
+    while not frontier.isEmpty():
+        state, path, cost = frontier.pop() # lay state, path va chi phi tu frontier
+
+        if state in visited:
+            continue
+
+        visited.add(state)
+
+        if problem.isGoalState(state):
+            return path
+
+        for successor, action, stepCost in problem.getSuccessors(state):
+            if successor not in visited:
+                newPath = path + [action]
+                newCost = cost + stepCost # tinh chi phi moi
+                frontier.push((successor, newPath, newCost), newCost) # push state moi vao frontier voi chi phi moi
+
+    return []
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -109,9 +174,30 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontier = util.PriorityQueue()
+    visited = set()
+    startState = problem.getStartState()
+    frontier.push((startState, [], 0), heuristic(startState, problem)) # push state ban dau vao frontier voi chi phi heuristic
 
+    while not frontier.isEmpty():
+        state, path, cost = frontier.pop()
 
+        if state in visited:
+            continue
+
+        visited.add(state)
+
+        if problem.isGoalState(state):
+            return path
+
+        for successor, action, stepCost in problem.getSuccessors(state):
+            if successor not in visited:
+                newPath = path + [action]
+                newCost = cost + stepCost
+                priority = newCost + heuristic(successor, problem) # tinh priority moi tu chi phi va heuristic
+                frontier.push((successor, newPath, newCost), priority) # push state moi vao frontier voi priority moi
+
+    return []
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
