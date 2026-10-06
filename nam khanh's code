@@ -1,1 +1,85 @@
+def depthFirstSearch(problem: SearchProblem):  # bài1
+    """
+    Search the deepest nodes in the search tree first.
+    Your search algorithm needs to return a list of actions that reaches the
+    goal. Make sure to implement a graph search algorithm.
+    To get started, you might want to try some of these simple commands to
+    understand the search problem that is being passed in:
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    """
+    "*** YOUR CODE HERE ***"
+    nganxep = util.Stack()
+    trangthai_bandau = problem.getStartState()
+    nganxep.push((trangthai_bandau,[]))
+    dacheck = set()
 
+    while nganxep.isEmpty() == False:
+        trangthai_hientai, hanhdong = nganxep.pop()
+        if problem.isGoalState(trangthai_hientai):
+            return hanhdong
+        if trangthai_hientai not in dacheck:
+            dacheck.add(trangthai_hientai)
+            for trangthai_tiep,buocdi,chiphi in problem.getSuccessors(trangthai_hientai):
+                hanhdong_moi = hanhdong + [buocdi]
+                nganxep.push((trangthai_tiep,hanhdong_moi))
+
+def breadthFirstSearch(problem: SearchProblem): # bài 2
+    """Search the shallowest nodes in the search tree first."""
+    "*** YOUR CODE HERE ***"
+    hangdoi = util.Queue()
+    trangthai_bandau = problem.getStartState()
+    hangdoi.push((trangthai_bandau,[]))
+    dacheck = set()
+    
+    while hangdoi.isEmpty() == False:
+        trangthai_hientai, hanhdong = hangdoi.pop()
+        if problem.isGoalState(trangthai_hientai):
+            return hanhdong
+        if trangthai_hientai not in dacheck:
+            dacheck.add(trangthai_hientai)
+            for trangthai_tiep,buocdi,chiphi in problem.getSuccessors(trangthai_hientai):
+                hanhdong_moi = hanhdong + [buocdi]
+                hangdoi.push((trangthai_tiep,hanhdong_moi))
+    
+def uniformCostSearch(problem: SearchProblem):  # bài 3
+    """Search the node of least total cost first."""
+    "*** YOUR CODE HERE ***"
+    hangdoi_ut = util.PriorityQueue()
+    trangthai_bandau = problem.getStartState()
+    hangdoi_ut.push((trangthai_bandau,[]),0)
+    dacheck = set()
+
+    while hangdoi_ut.isEmpty() == False:
+            trangthai_hientai, hanhdong = hangdoi_ut.pop()
+            if problem.isGoalState(trangthai_hientai):
+                return hanhdong
+            if trangthai_hientai not in dacheck:
+                dacheck.add(trangthai_hientai)
+                for trangthai_tiep,buocdi,chiphi in problem.getSuccessors(trangthai_hientai):
+                    hanhdong_moi = hanhdong + [buocdi]
+                    tongchiphi = problem.getCostOfActions(hanhdong_moi)
+
+def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):  # bài 4
+    """Search the node that has the lowest combined cost and heuristic first."""
+    "*** YOUR CODE HERE ***"
+    hangdoi_ut = util.PriorityQueue()
+    trangthai_bandau = problem.getStartState()
+    heur_bandau = heuristic(trangthai_bandau, problem)
+    hangdoi_ut.push((trangthai_bandau,[]),heur_bandau)
+    dacheck = set()
+    
+    while hangdoi_ut.isEmpty() == False:
+            trangthai_hientai, hanhdong = hangdoi_ut.pop()
+            if problem.isGoalState(trangthai_hientai):
+                return hanhdong
+            if trangthai_hientai not in dacheck:
+                dacheck.add(trangthai_hientai)
+                for trangthai_tiep,buocdi,chiphi in problem.getSuccessors(trangthai_hientai):
+                    hanhdong_moi = hanhdong + [buocdi]
+                    chiphi_dadi = problem.getCostOfActions(hanhdong_moi)
+                    chiphi_toidich = heuristic(trangthai_tiep,problem)
+                    tongchiphi = chiphi_dadi + chiphi_toidich
+                    hangdoi_ut.push((trangthai_tiep,hanhdong_moi),tongchiphi)
+                    hangdoi_ut.push((trangthai_tiep,hanhdong_moi),tongchiphi)
